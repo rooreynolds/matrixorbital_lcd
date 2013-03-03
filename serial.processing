@@ -1,0 +1,35 @@
+#include <SoftwareSerial.h>
+#define rxPin 6 // software Rx pin (connect to Tx on LCD)
+#define txPin 7 // software Tx pin (connect to Rx on LCD)
+
+// set up a new serial port
+SoftwareSerial swSerial =  SoftwareSerial(rxPin, txPin);
+
+void setup()  {
+  pinMode(rxPin, INPUT);
+  pinMode(txPin, OUTPUT);
+  // set the data rate for the SoftwareSerial port
+  swSerial.begin(19200);
+  // and set the date rate for the real serial port
+  Serial.begin(9600);
+  delay(100); // (can't use port immediately?)
+  clearLCD();
+  swSerial.print("Hello, world!");
+}
+
+void loop() {
+   // retransmit bytes read from the computer to LCD
+   if (Serial.available() > 0) {
+      byte inchar = Serial.read();
+      swSerial.write(inchar);
+   }
+}
+
+// Clear the LCD (works with my Matrix Orbital LK204-24-USB)
+// See http://www.arduino.cc/playground/Learning/SerialLCD
+// (and compare with your LCD display docs)
+// for many more LCD display helper functions.
+void clearLCD(){
+  swSerial.write(254);
+  swSerial.write(88);
+}
